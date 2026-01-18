@@ -41,7 +41,7 @@ export default function SignUp({ setCurrentPage, setOpenModal }) {
             }
 
 
-            const response = await axiosinstance.post('http://localhost:5000/api/auth/register', { name, email, password, profileImgUrl: imageUrl })
+            const response = await axiosinstance.post('/api/auth/register', { name, email, password, profileImgUrl: imageUrl })
             const { token } = response.data;
             if (token) {
                 localStorage.setItem('token', response.data.token);

@@ -29,7 +29,7 @@ export default function InterviewPrep() {
 
     const fetchSessionDataById = async () => {
         try {
-            const response = await axiosinstance.get(`http://localhost:5000/api/session/interview-prep/${sessionId}`);
+            const response = await axiosinstance.get(`/api/session/interview-prep/${sessionId}`);
             if (response.data || response.data.session) {
                 setSessionData(response.data.session)
             }
@@ -42,7 +42,7 @@ export default function InterviewPrep() {
         try {
             setLearnMoreDrawer(true)
             setLoading(true)
-            const response = await axiosinstance.post('http://localhost:5000/api/ai/generate-explanation', { question })
+            const response = await axiosinstance.post('/api/ai/generate-explanation', { question })
             if (response) {
                 console.log(response.data)
                 setExplanation({ title: response?.data.data.title, explanation: response.data.data.explanation });
@@ -58,7 +58,7 @@ export default function InterviewPrep() {
 
     const togglePinStatus = async (questionid) => {
         try {
-            const response = await axiosinstance.post(`http://localhost:5000/api/question/${questionid}/pin`)
+            const response = await axiosinstance.post(`/api/question/${questionid}/pin`)
             if (response || response.data) {
                 fetchSessionDataById();
             }
@@ -72,7 +72,7 @@ export default function InterviewPrep() {
     const uploadMoreQuestions = async () => {
         try {
             setIsUpdateLoader(true)
-            const airesponse = await axiosinstance.post('http://localhost:5000/api/ai/generate-question', {
+            const airesponse = await axiosinstance.post('/api/ai/generate-question', {
                 role: sessionData?.role,
                 experience: sessionData?.experience,
                 topicsToFocus: sessionData?.topicsToFocus,
@@ -81,7 +81,7 @@ export default function InterviewPrep() {
             const generatedQuestions = airesponse.data.data;
             console.log(generatedQuestions)
 
-            const response = await axiosinstance.post('http://localhost:5000/api/question/add', { sessionId, questions: generatedQuestions })
+            const response = await axiosinstance.post('/api/question/add', { sessionId, questions: generatedQuestions })
             if (response.data) {
                 fetchSessionDataById()
             }

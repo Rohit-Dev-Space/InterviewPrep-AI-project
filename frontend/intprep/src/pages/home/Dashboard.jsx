@@ -35,7 +35,7 @@ export default function Dashboard() {
 
     const fetchAllSessions = async () => {
         try {
-            const response = await axiosinstance.get('http://localhost:5000/api/session/my-session');
+            const response = await axiosinstance.get('/api/session/my-session');
             if (response.data) {
                 console.log("Fetched sessions successfully :", response.data);
                 if (Array.isArray(response.data.session)) {
@@ -53,7 +53,7 @@ export default function Dashboard() {
 
     const deleteSession = async (sessionId) => {
         try {
-            const response = await axiosinstance.delete(`http://localhost:5000/api/session/${sessionId}`)
+            const response = await axiosinstance.delete(`/api/session/${sessionId}`)
             if (response) {
                 fetchAllSessions()
                 setOpenDeleteAlert({ open: false, data: null })

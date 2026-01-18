@@ -26,7 +26,7 @@ export default function Login({ setCurrentPage, setOpenModal }) {
         setError("")
 
         try {
-            const response = await axiosinstance.post('http://localhost:5000/api/auth/login', { email, password })
+            const response = await axiosinstance.post('/api/auth/login', { email, password })
 
             const { token } = response.data;
 

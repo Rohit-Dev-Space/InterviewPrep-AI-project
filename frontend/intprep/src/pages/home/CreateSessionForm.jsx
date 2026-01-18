@@ -40,11 +40,11 @@ export default function CreateSessionForm({ closeModal }) {
             setError(null);
         }
         try {
-            const aiResponse = await axiosinstance.post('http://localhost:5000/api/ai/generate-question', { role, experience, topicsToFocus, NumberofQuestions: 10 });
+            const aiResponse = await axiosinstance.post('/api/ai/generate-question', { role, experience, topicsToFocus, NumberofQuestions: 10 });
             console.log(aiResponse.data);
             const generatedQuestions = aiResponse.data;
 
-            const response = await axiosinstance.post('http://localhost:5000/api/session/create-session', {
+            const response = await axiosinstance.post('/api/session/create-session', {
                 role,
                 experience: String(formData.experience),
                 topicsToFocus,

@@ -10,9 +10,10 @@ const app = express();
 
 app.use(
     cors({
-        origin: '*',
+        origin: 'https://interviewprep-ai-rrk.vercel.app/',
         methods: ['GET', 'PUT', 'DELETE', 'POST'],
-        allowedHeaders: ["Content-Type", "Authorization"]
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true
     })
 )
 

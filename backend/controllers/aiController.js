@@ -42,7 +42,12 @@ const generateInterviewQuestion = async (req, res) => {
         const { role, topicsToFocus, experience, NumberofQuestions } = req.body;
 
         // validate
-        if (!role || !topicsToFocus || !experience || !NumberofQuestions) {
+        if (
+            role === undefined || role === null ||
+            topicsToFocus === undefined || topicsToFocus === null ||
+            experience === undefined || experience === null ||
+            NumberofQuestions === undefined || NumberofQuestions === null
+        ) {
             return res.status(400).json({
                 message: 'Invalid input data: missing fields',
                 received: req.body

@@ -74,7 +74,11 @@ export default function InterviewPrep() {
 
     const uploadMoreQuestions = async () => {
 
-        if (!sessionData?.role || !sessionData?.experience || !sessionData?.topicsToFocus) {
+        if (
+            sessionData?.role === undefined ||
+            sessionData?.experience === undefined ||
+            sessionData?.topicsToFocus === undefined
+        ) {
             console.log("Session data not loaded yet");
             return;
         }

@@ -53,7 +53,7 @@ export default function LandingPage() {
                 <div className="w-full min-h-full relative p-10">
                     <div className="">
                         <section>
-                            <img src={HEROimg} alt="Hero Image" className="w-[80vh] md:w-[200vh] border-2 border-amber-500 mx-auto h-auto rounded-xl" />
+                            <img src='/hero.png' alt="Hero Image" className="w-[80vh] md:w-[200vh] border-2 border-amber-500 mx-auto h-auto rounded-xl" />
                             <div className="w-full h-auto mx-auto flex flex-col gap-10 my-20">
                                 <div className="mx-auto text-center">
                                     <h2 className="text-4xl font-medium mb-5">Feature that make <br /> you shine</h2>

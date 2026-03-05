@@ -70,21 +70,33 @@ export default function InterviewPrep() {
     }
 
     const uploadMoreQuestions = async () => {
+
+        if (!sessionData?.role || !sessionData?.experience || !sessionData?.topicsToFocus) {
+            console.log("Session data not loaded yet");
+            return;
+        }
+
         try {
             setIsUpdateLoader(true)
+
             const airesponse = await axiosinstance.post('/api/ai/generate-question', {
-                role: sessionData?.role,
-                experience: sessionData?.experience,
-                topicsToFocus: sessionData?.topicsToFocus,
+                role: sessionData.role,
+                experience: sessionData.experience,
+                topicsToFocus: sessionData.topicsToFocus,
                 NumberofQuestions: 10
             })
-            const generatedQuestions = airesponse.data.data;
-            console.log(generatedQuestions)
 
-            const response = await axiosinstance.post('/api/question/add', { sessionId, questions: generatedQuestions })
+            const generatedQuestions = airesponse.data.data;
+
+            const response = await axiosinstance.post('/api/question/add', {
+                sessionId,
+                questions: generatedQuestions
+            })
+
             if (response.data) {
                 fetchSessionDataById()
             }
+
         } catch (err) {
             setExplanation(null)
             setErrorMsg('Failed to generate More Questions')
@@ -98,7 +110,7 @@ export default function InterviewPrep() {
         if (sessionId) {
             fetchSessionDataById();
         }
-    }, [])
+    }, [sessionId])
 
     return (
         <DashboardLayout>

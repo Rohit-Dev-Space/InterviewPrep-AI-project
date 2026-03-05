@@ -30,13 +30,15 @@ export default function InterviewPrep() {
     const fetchSessionDataById = async () => {
         try {
             const response = await axiosinstance.get(`/api/session/interview-prep/${sessionId}`);
-            if (response.data || response.data.session) {
-                setSessionData(response.data.session)
+
+            if (response.data && response.data.session) {
+                setSessionData(response.data.session);
             }
+
         } catch (err) {
             console.log("Error fetching session data:", err);
         }
-    }
+    };
 
     const generateConceptExplanantion = async (question) => {
         try {

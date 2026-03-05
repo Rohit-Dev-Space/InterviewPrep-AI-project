@@ -21,14 +21,20 @@ async function retry(fn, retries = 2, delay = 1000) {
 }
 
 function extractTextFromResponse(response) {
-    // safe extraction depending on SDK shape
-    // supports: response.candidates[0].content.parts[0].text
-    // or response.output?.[0]?.content?.[0]?.text (older variants)
     const text =
         response?.candidates?.[0]?.content?.parts?.[0]?.text ||
         response?.output?.[0]?.content?.[0]?.text ||
-        response?.text || ''; // fallback
-    return (typeof text === 'string') ? text : '';
+        response?.text ||
+        '';
+    return typeof text === 'string' ? text : '';
+}
+
+// helper to remove markdown and clean JSON
+function cleanJsonText(text) {
+    return text
+        .replace(/```json/g, '')
+        .replace(/```/g, '')
+        .trim();
 }
 
 const generateInterviewQuestion = async (req, res) => {
@@ -37,52 +43,66 @@ const generateInterviewQuestion = async (req, res) => {
 
         // validate
         if (!role || !topicsToFocus || !experience || !NumberofQuestions) {
-            return res.status(400).json({ message: 'Invalid input data: missing fields', received: req.body });
+            return res.status(400).json({
+                message: 'Invalid input data: missing fields',
+                received: req.body
+            });
         }
 
-        // build prompt (you already have helper)
         const prompt = questionAnswerPrompt(role, topicsToFocus, experience, NumberofQuestions);
-        console.log('[AI] prompt:', prompt.length ? prompt.slice(0, 800) : prompt); // log first 800 chars
+        console.log('[AI] prompt:', prompt.length ? prompt.slice(0, 800) : prompt);
 
-        // correct request shape for @google/genai
-        const apiCall = () => ai.models.generateContent({
-            model: 'gemini-2.5-flash', // safer, available model family - change if needed
-            contents: [
-                { role: 'user', parts: [{ text: prompt }] }
-            ],
-            // optional: set safety or other params depending on SDK version
-        });
+        const apiCall = () =>
+            ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: [{ role: 'user', parts: [{ text: prompt }] }]
+            });
 
         const response = await retry(apiCall, 2, 1000);
+
         const rawText = extractTextFromResponse(response);
 
         if (!rawText) {
-            console.error('[AI] empty rawText, response:', JSON.stringify(response, null, 2));
-            return res.status(500).json({ message: 'AI returned empty response', debug: true });
+            console.error('[AI] empty AI response:', JSON.stringify(response, null, 2));
+            return res.status(500).json({
+                message: 'AI returned empty response',
+                debug: true
+            });
         }
 
-        // clean and parse JSON safely
-        const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        const cleaned = cleanJsonText(rawText);
+
         let data;
         try {
             data = JSON.parse(cleaned);
         } catch (parseErr) {
-            console.error('[AI] JSON parse error. rawText:', rawText);
-            return res.status(500).json({ message: 'AI returned invalid JSON', raw: cleaned });
+            console.error('[AI] JSON parse error. cleaned:', cleaned);
+            return res.status(500).json({
+                message: 'AI returned invalid JSON',
+                raw: cleaned
+            });
         }
 
         return res.status(200).json({ data });
     } catch (err) {
         console.error('[AI] generateInterviewQuestion error:', err);
-        // include status if present
+
         const status = err?.status || err?.response?.status || 500;
-        return res.status(500).json({ message: 'Internal server Error', error: { message: err?.message || err, status } });
+
+        return res.status(500).json({
+            message: 'Internal server Error',
+            error: {
+                message: err?.message || err,
+                status
+            }
+        });
     }
 };
 
 const generateConceptExplanation = async (req, res) => {
     try {
         const { question } = req.body;
+
         if (!question) {
             return res.status(400).json({ message: 'Invalid input data' });
         }
@@ -90,36 +110,53 @@ const generateConceptExplanation = async (req, res) => {
         const prompt = conceptExplanationPrompt(question);
         console.log('[AI] concept prompt length:', prompt.length);
 
-        const apiCall = () => ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: [
-                { role: 'user', parts: [{ text: prompt }] }
-            ],
-        });
+        const apiCall = () =>
+            ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: [{ role: 'user', parts: [{ text: prompt }] }]
+            });
 
         const response = await retry(apiCall, 2, 1000);
+
         const rawText = extractTextFromResponse(response);
 
         if (!rawText) {
-            console.error('[AI] empty rawText for concept response:', JSON.stringify(response, null, 2));
-            return res.status(500).json({ message: 'AI returned empty response' });
+            console.error('[AI] empty concept AI response:', JSON.stringify(response, null, 2));
+            return res.status(500).json({
+                message: 'AI returned empty response'
+            });
         }
 
-        const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        const cleaned = cleanJsonText(rawText);
+
         let data;
         try {
             data = JSON.parse(cleaned);
         } catch (parseErr) {
-            console.error('[AI] JSON parse error (concept). rawText:', rawText);
-            return res.status(500).json({ message: 'AI returned invalid JSON', raw: cleaned });
+            console.error('[AI] JSON parse error (concept). cleaned:', cleaned);
+            return res.status(500).json({
+                message: 'AI returned invalid JSON',
+                raw: cleaned
+            });
         }
 
         return res.status(200).json({ data });
     } catch (err) {
         console.error('[AI] generateConceptExplanation error:', err);
+
         const status = err?.status || err?.response?.status || 500;
-        return res.status(500).json({ message: 'Internal server Error', error: { message: err?.message || err, status } });
+
+        return res.status(500).json({
+            message: 'Internal server Error',
+            error: {
+                message: err?.message || err,
+                status
+            }
+        });
     }
 };
 
-module.exports = { generateInterviewQuestion, generateConceptExplanation };
+module.exports = {
+    generateInterviewQuestion,
+    generateConceptExplanation
+};

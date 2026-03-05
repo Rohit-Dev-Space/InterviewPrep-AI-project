@@ -32,6 +32,7 @@ export default function InterviewPrep() {
             const response = await axiosinstance.get(`/api/session/interview-prep/${sessionId}`);
 
             if (response.data && response.data.session) {
+                console.log("SESSION DATA:", response.data.session);
                 setSessionData(response.data.session);
             }
 

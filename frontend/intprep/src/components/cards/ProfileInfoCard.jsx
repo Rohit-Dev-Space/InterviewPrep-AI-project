@@ -14,19 +14,30 @@ export default function ProfileInfoCard() {
     }
 
     return (
-        <div className="flex justify-center items-center gap-3">
+        <div className="flex justify-center items-center gap-2 sm:gap-3">
             <div className="flex items-center justify-center">
-                <img src={user.profileImgUrl} onError={(e) => (e.target.src = "/defaultImg.png")} alt="user Image" className="w-11 h-11 object-cover bg-white rounded-full" />
+                <img
+                    src={user.profileImgUrl}
+                    onError={(e) => (e.target.src = "/defaultImg.png")}
+                    alt="user Image"
+                    className="w-9 h-9 sm:w-11 sm:h-11 object-cover bg-white rounded-full"
+                />
             </div>
-            <div className="flex flex-col items-center px-2">
+
+            <div className="flex flex-col items-center px-1 sm:px-2">
                 <div>
-                    <h1 className="text-black text-lg font-bold">{user.name || ""}</h1>
+                    <h1 className="text-black text-sm sm:text-lg font-bold whitespace-nowrap">
+                        {user.name || ""}
+                    </h1>
                 </div>
-                <button className="text-orange-600 text-sm font-semibold cursor-pointer hover:underline" onClick={handleLogOut}>
+
+                <button
+                    className="text-orange-600 text-xs sm:text-sm font-semibold cursor-pointer hover:underline"
+                    onClick={handleLogOut}
+                >
                     Logout
                 </button>
             </div>
-
         </div>
     )
 }

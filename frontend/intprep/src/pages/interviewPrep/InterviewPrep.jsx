@@ -16,7 +16,7 @@ import { SpinLoader } from "../../components/loader/Loader";
 export default function InterviewPrep() {
     const { sessionId } = useParams();
 
-    const [sessionData, setSessionData] = useState([]);
+    const [sessionData, setSessionData] = useState({});
     const [errorMsg, setErrorMsg] = useState("");
     const [openMoreQuestions, setOpenMoreQuestions] = useState(false);
     const [learnMoreDrawer, setLearnMoreDrawer] = useState(false);
